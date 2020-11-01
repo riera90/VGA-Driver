@@ -62,7 +62,8 @@ architecture rtl of vgaPainter is
     type image_5x5_box_type is record
         img  : image_5x5_type;
         loc  : plane_point_type; -- upper left corner of image
-        scale: std_logic_vector(7 downto 0);
+        hscale: std_logic_vector(7 downto 0);
+        vscale: std_logic_vector(7 downto 0);
     end record;
 
     procedure moveUp(signal box : inout box_type) is
@@ -107,7 +108,7 @@ architecture rtl of vgaPainter is
     signal img5x5hScaleCounter   : std_logic_vector(7 downto 0); -- image horizontal scale counter
     signal img5x5vScaleCounter   : std_logic_vector(7 downto 0); -- image vertical scale counter
     signal img5x5Box             : image_5x5_box_type; 
-    
+    signal newLineFlag           : std_logic;
     
 begin
 
@@ -192,18 +193,20 @@ begin
             img5x5hCounter        <= (others => '0');
             img5x5hScaleCounter   <= (others => '0');
             img5x5vScaleCounter   <= (others => '0');
+            newLineFlag           <= '0';
             img5x5Box <= (
                 loc => (
                     x => "0011000000",
                     y => "0001000000"
                 ),
-                scale => "00010010",
+                hscale => "00001000",
+                vscale => "00000100",
                 img => (
-                    "11111100", "11100000", "11100000", "11100000", "11111111", 
-                    "00011100", "00000000", "00000000", "00000000", "11111111", 
-                    "00011100", "11100000", "00011100", "00000011", "11111111", 
-                    "00011100", "00000000", "00000000", "00000000", "11111111", 
-                    "00011111", "00000011", "00000011", "00000011", "00000011"
+                    "11100000", "11100000", "11100000", "11100000", "11100000", 
+                    "11100000", "00000000", "00000000", "00000000", "11100000", 
+                    "11100000", "00000011", "00011100", "00000011", "11100000", 
+                    "11100000", "00000000", "00000000", "00000000", "11100000", 
+                    "11100000", "11100000", "11100000", "11100000", "11100000"
                 )
             );
         elsif clk = '1' and clk'EVENT then
@@ -211,22 +214,21 @@ begin
             vgaG      <= (others => '0');
             vgaB      <= (others => '0');
             if hc = "0000000000" then -- start of new line
-                img5x5imagePointer <= img5x5imageBasePointer;
-                img5x5hScaleCounter <= (others => '0');
                 img5x5hCounter <= (others => '0');
-                -- add 1 to vertical scale counter
-                img5x5vScaleCounter <= img5x5vScaleCounter + 1;
+                img5x5hScaleCounter <= (others => '0');
+                img5x5imagePointer <= img5x5imageBasePointer;
+                newLineFlag <= '1';
             end if;
             if vc = "0000000000" then -- start of new screen
-                img5x5imageBasePointer <= (others => '0');
                 img5x5vScaleCounter <= (others => '0');
+                img5x5imageBasePointer <= (others => '0');
             end if;
             
-            if von='1' then
-                if img5x5Box.loc.x < hc and img5x5Box.loc.y < vc then--and img5x5hCounter < "110"  and img5x5imageBasePointer < "11001" then
-                    
+            if von='1' then 
+                if img5x5Box.loc.x < hc and img5x5Box.loc.y < vc and img5x5hCounter < "101" and img5x5imagePointer < "11001" then
+
                     -- horizonal scale counter
-                    if img5x5hScaleCounter = img5x5Box.scale then
+                    if img5x5hScaleCounter = img5x5Box.hscale then
                         -- reset the horizontal scale counter
                         img5x5hScaleCounter <= (others => '0');
                         -- go to next pixel in the line
@@ -238,18 +240,23 @@ begin
                         img5x5hScaleCounter <= img5x5hScaleCounter + 1;
                     end if;
 
+                    if newLineFlag = '1' then
+                        -- add one to vertical counter
+                        img5x5vScaleCounter <= img5x5vScaleCounter + 1;
+                        newLineFlag <= '0';
+                    end if;
 
                     -- vertical scale counter
-                    if img5x5vScaleCounter = img5x5Box.scale then
+                    if img5x5vScaleCounter = img5x5Box.vscale then
                         -- reset the vertical scale counter
-                        img5x5hScaleCounter <= (others => '0');
+                        img5x5vScaleCounter <= (others => '0');
                         -- goto next line (add 5 to the image base pointer)
                         img5x5imageBasePointer <= img5x5imageBasePointer + 5;
                     end if;
 
                     index := CONV_INTEGER(img5x5imagePointer);
                     
-                    vgaR <= (others => '1');--img5x5Box.img(index)(6 downto 4);
+                    vgaR <= img5x5Box.img(index)(6 downto 4);
                     vgaG <= img5x5Box.img(index)(3 downto 1);
                     vgaB <= img5x5Box.img(index)(1 downto 0);
                     
