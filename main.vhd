@@ -38,8 +38,7 @@ entity main is
         vgaR  : out std_logic_vector(3 downto 1);
         vgaG  : out std_logic_vector(3 downto 1);
         vgaB  : out std_logic_vector(3 downto 2);
-        btn   : in  std_logic_vector(3 downto 0);
-        sw    : in  std_logic_vector(1 downto 0)
+        btn   : in  std_logic_vector(3 downto 0)
     );
 end main;
 
@@ -69,8 +68,7 @@ begin
         vgaR  => vgaR,
         vgaG  => vgaG,
         vgaB  => vgaB,
-        btn   => btn,
-        sw    => sw
+        btn   => btn
     );
 
 end rtl;

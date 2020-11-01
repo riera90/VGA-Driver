@@ -134,8 +134,8 @@ NET "clk"         LOC = "B8";    # Bank = 0, Pin name = IP_L13P_0/GCLK8, Type = 
 #NET "Led<7>"      LOC = "P4";    # Bank = 3, Pin name = N.C., Type = N.C.,                            Sch name = LD7? other than s3e500
 
 ## Switches
-NET "sw<0>"       LOC = "G18";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = SW0
-NET "sw<1>"       LOC = "H18";   # Bank = 1, Pin name = IP/VREF_1, Type = VREF,                       Sch name = SW1
+#NET "sw<0>"       LOC = "G18";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = SW0
+#NET "sw<1>"       LOC = "H18";   # Bank = 1, Pin name = IP/VREF_1, Type = VREF,                       Sch name = SW1
 #NET "sw<2>"       LOC = "K18";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = SW2
 #NET "sw<3>"       LOC = "K17";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = SW3
 #NET "sw<4>"       LOC = "L14";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = SW4

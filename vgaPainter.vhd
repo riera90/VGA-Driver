@@ -34,8 +34,7 @@ entity vgaPainter is
         vgaR : out std_logic_vector(3 downto 1);
         vgaG : out std_logic_vector(3 downto 1);
         vgaB : out std_logic_vector(3 downto 2);
-        btn  : in  std_logic_vector(3 downto 0);
-        sw   : in  std_logic_vector(1 downto 0)
+        btn  : in  std_logic_vector(3 downto 0)
     );
 end vgaPainter;
 
@@ -66,36 +65,30 @@ architecture rtl of vgaPainter is
         vscale: std_logic_vector(7 downto 0);
     end record;
 
-    procedure moveUp(signal box : inout box_type) is
+    procedure moveUp(signal box : inout image_5x5_box_type) is
     begin
-        box.p1.y <= box.p1.y - 1;
-        box.p2.y <= box.p2.y - 1;
+        box.loc.y <= box.loc.y - 1;
     end procedure;
 
-    procedure moveDown(signal box : inout box_type) is
+    procedure moveDown(signal box : inout image_5x5_box_type) is
     begin
-        box.p1.y <= box.p1.y + 1;
-        box.p2.y <= box.p2.y + 1;
+        box.loc.y <= box.loc.y + 1;
     end procedure;
 
-    procedure moveRight(signal box : inout box_type) is
+    procedure moveRight(signal box : inout image_5x5_box_type) is
     begin
-        box.p1.x <= box.p1.x - 1;
-        box.p2.x <= box.p2.x - 1;
+        box.loc.x <= box.loc.x - 1;
     end procedure;
 
-    procedure moveLeft(signal box : inout box_type) is
+    procedure moveLeft(signal box : inout image_5x5_box_type) is
     begin
-        box.p1.x <= box.p1.x + 1;
-        box.p2.x <= box.p2.x + 1;
+        box.loc.x <= box.loc.x + 1;
     end procedure;
 
-    procedure moveNot(signal box : inout box_type) is
+    procedure moveNot(signal box : inout image_5x5_box_type) is
     begin
-        box.p1.x <= box.p1.x;
-        box.p2.x <= box.p2.x;
-        box.p1.y <= box.p1.y;
-        box.p2.y <= box.p2.y;
+        box.loc.x <= box.loc.x;
+        box.loc.y <= box.loc.y;
     end procedure;
 
     signal mc     : std_logic_vector(17 downto 0); -- The movement counter
@@ -131,54 +124,6 @@ begin
         end if;
     end process;
 
---    --Handles the movement
---    process(clk, rst)
---    begin
---        if rst = '1' then
---            
---        elsif clk = '1' and clk'EVENT then
---            if sw(1)='0' then
---                if sw(0)='0' then
---                    case btnP(3 downto 0) is
---                        when "1000" => moveLeft(box1);
---                        when "0100" => moveRight(box1);
---                        when "0010" => moveUp(box1);
---                        when "0001" => moveDown(box1);
---                        when "1010" => moveLeft(box1);  moveUp(box1);
---                        when "1001" => moveLeft(box1);  moveDown(box1);
---                        when "0110" => moveRight(box1); moveUp(box1);
---                        when "0101" => moveRight(box1); moveDown(box1);
---                        when others => moveNot(box1);
---                    end case;
---                else
---                    case btnP(3 downto 0) is
---                        when "1000" => moveLeft(box2);
---                        when "0100" => moveRight(box2);
---                        when "0010" => moveUp(box2);
---                        when "0001" => moveDown(box2);
---                        when "1010" => moveLeft(box2);  moveUp(box2);
---                        when "1001" => moveLeft(box2);  moveDown(box2);
---                        when "0110" => moveRight(box2); moveUp(box2);
---                        when "0101" => moveRight(box2); moveDown(box2);
---                        when others => moveNot(box2);
---                    end case;
---                end if;
---            else
---                case btnP(3 downto 0) is
---                    when "1000" => moveLeft(box1);                   moveLeft(box2);
---                    when "0100" => moveRight(box1);                  moveRight(box2);
---                    when "0010" => moveUp(box1);                     moveUp(box2);
---                    when "0001" => moveDown(box1);                   moveDown(box2);
---                    when "1010" => moveLeft(box1);  moveUp(box1);    moveLeft(box2);  moveUp(box2);
---                    when "1001" => moveLeft(box1);  moveDown(box1);  moveLeft(box2);  moveDown(box2);
---                    when "0110" => moveRight(box1); moveUp(box1);    moveRight(box2); moveUp(box2);
---                    when "0101" => moveRight(box1); moveDown(box1);  moveRight(box2); moveDown(box2);
---                    when others => moveNot(box1);                    moveNot(box2);
---                end case;
---            end if;
---        end if;
---    end process;
-
 
     -- the painter
     process(clk, rst)
@@ -210,6 +155,18 @@ begin
                 )
             );
         elsif clk = '1' and clk'EVENT then
+            case btnP(3 downto 0) is
+                when "0001" => moveLeft(img5x5Box);
+                when "0010" => moveRight(img5x5Box);
+                when "0100" => moveUp(img5x5Box);
+                when "1000" => moveDown(img5x5Box);
+                when "0101" => moveLeft(img5x5Box);  moveUp(img5x5Box);
+                when "1001" => moveLeft(img5x5Box);  moveDown(img5x5Box);
+                when "0110" => moveRight(img5x5Box); moveUp(img5x5Box);
+                when "1010" => moveRight(img5x5Box); moveDown(img5x5Box);
+                when others => moveNot(img5x5Box);
+            end case;
+
             vgaR      <= (others => '0');
             vgaG      <= (others => '0');
             vgaB      <= (others => '0');
