@@ -1,31 +1,11 @@
----------------------------------------------------------------------
--- vga_main.vhd  Demo VGA configuration module.
----------------------------------------------------------------------
--- 	Author: Barron Barnett
---            Copyright 2004 Digilent, Inc.
----------------------------------------------------------------------
---
--- This project is compatible with Xilinx ISE or Xilinx WebPack tools.
---
--- Inputs: 
---		clk  - System Clock
--- Outputs:
---		Hsync	- Horizontal Sync
---		Hsync	- Vertical Sync
---		vgaR	- Red Output
---		vgaG	- Green Output
---		vgaB	- Blue Output
---
--- This module creates a three line pattern on a vga display using a
+-- This module createsthe driving signals of the VGA protocol with 
 -- a vertical refresh rate of 60Hz.  This is done by dividing the
 -- system clock in half and using that for the pixel clock.  This in
 -- turn drives the vertical sync when the horizontal sync has reached
--- its reset point.  All data displayed is done by basic value
--- comparisons.
-------------------------------------------------------------------------
--- Revision History:
---	 07/01/2004(BarronB): created
-------------------------------------------------------------------------
+-- its reset point.
+-- the RGB values are feed by the VGA Painter
+
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
